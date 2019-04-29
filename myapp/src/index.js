@@ -11,9 +11,9 @@ function Square(props) {
             {props.value}
         </button>
     );
-  }
+}
   
-  class Board extends React.Component {
+class Board extends React.Component {
     renderSquare(i) {
         return <Square
             value={this.props.squares[i]}
@@ -42,21 +42,22 @@ function Square(props) {
             </div>
         );
     }
-  }
+}
   
-  class Game extends React.Component {
+class Game extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             history: [{
                 squares: Array(9).fill(null),
             }],
+            stepNumber: 0,
             xIsNext: true
         }
     }
 
     handleClick(i) {
-        const history = this.state.history;
+        const history = this.state.history.slice(0, this.state.stepNumber + 1);
         const current = history[history.length - 1];
         const squares = current.squares.slice();
         if ( calculateWinner(squares) || squares[i] ) {
@@ -68,13 +69,21 @@ function Square(props) {
             history: history.concat([{
                 squares: squares,
               }]),
+            stepNumber: history.length,
             xIsNext: !this.state.xIsNext
         });
     }
 
+    jumpTo(step) {
+        this.setState({
+            stepNumber: step,
+            xIsNext: (step % 2) === 0,
+        })
+    }
+
     render() {
         const history = this.state.history;
-        const current = history[history.length-1];
+        const current = history[this.state.stepNumber];
         const winner = calculateWinner(current.squares);
 
         const moves = history.map((step, move) => {
@@ -112,16 +121,16 @@ function Square(props) {
             </div>
         );
     }
-  }
+}
   
-  // ========================================
+// ========================================
   
-  ReactDOM.render(
+ReactDOM.render(
     <Game />,
     document.getElementById('root')
-  );
+);
   
-  function calculateWinner(squares) {
+function calculateWinner(squares) {
     const lines = [
       [0, 1, 2],
       [3, 4, 5],
@@ -139,4 +148,4 @@ function Square(props) {
       }
     }
     return null;
-  }
+}
